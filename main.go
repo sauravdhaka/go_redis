@@ -48,11 +48,19 @@ func (s *Server) Start() error {
 
 }
 
+func (s *Server) handleRawMessage(rawMsg []byte) error {
+	fmt.Println(string(rawMsg))
+	return nil
+}
+
 func (s *Server) loop() {
 	for {
 		select {
 		case rawMsg := <-s.msgCh:
-			fmt.Println(rawMsg)
+			if err := s.handleRawMessage(rawMsg); err != nil {
+				slog.Error("raw message error", "err", err)
+			}
+
 		case <-s.quitCh:
 			return
 		case peer := <-s.addPeerCh:
