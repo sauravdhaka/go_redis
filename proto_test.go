@@ -5,21 +5,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"testing"
 
 	"github.com/tidwall/resp"
 )
 
-const (
-	CommandSet = "Set"
-)
-
-type Command interface {
-}
-
-type SetCommand struct {
-}
-
-func parseCommand(raw string) (Command, error) {
+func TestProtocol(t *testing.T) {
+	raw := "*3\r\n$3\r\nset\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"
+	// raw += "*3\r\n$3\r\nset\r\n$8\r\nfollower\r\n$6\r\nSkyler\r\n"
 	rd := resp.NewReader(bytes.NewBufferString(raw))
 	for {
 		v, _, err := rd.ReadValue()
@@ -31,11 +24,9 @@ func parseCommand(raw string) (Command, error) {
 		}
 		fmt.Printf("Read %s\n", v.Type())
 		if v.Type() == resp.Array {
-			for i, v := range v.Array() {
-				fmt.Printf("  #%d %s, value: '%s'\n", i, v.Type(), v)
+			for _, v := range v.Array() {
+				fmt.Printf("%v\n", v)
 			}
 		}
 	}
-
-	return "foo", nil
 }
