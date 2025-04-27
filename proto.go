@@ -10,13 +10,15 @@ import (
 )
 
 const (
-	CommandSet = "Set"
+	CommandSet = "set"
 )
 
 type Command interface {
 }
 
 type SetCommand struct {
+	key string
+	val string
 }
 
 func parseCommand(raw string) (Command, error) {
@@ -29,13 +31,26 @@ func parseCommand(raw string) (Command, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Read %s\n", v.Type())
+
 		if v.Type() == resp.Array {
-			for i, v := range v.Array() {
-				fmt.Printf("  #%d %s, value: '%s'\n", i, v.Type(), v)
+			for _, value := range v.Array() {
+				switch value.String() {
+				case CommandSet:
+					fmt.Printf("%+v\n", v.Array())
+					if len(v.Array()) != 3 {
+						return nil, fmt.Errorf("invalid number of arguments in set command")
+					}
+					cmd := SetCommand{
+						key: v.Array()[1].String(),
+						val: v.Array()[2].String(),
+					}
+					return cmd, nil
+
+				}
 			}
 		}
+		return nil, fmt.Errorf("invalid or unknown command recived: ", raw)
 	}
 
-	return "foo", nil
+	return nil, fmt.Errorf("invalid or unknown command recived: ", raw)
 }

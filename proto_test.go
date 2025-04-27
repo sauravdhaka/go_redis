@@ -1,32 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"log"
 	"testing"
-
-	"github.com/tidwall/resp"
 )
 
 func TestProtocol(t *testing.T) {
 	raw := "*3\r\n$3\r\nset\r\n$3\r\nfoo\r\n$3\r\nbar\r\n"
-	// raw += "*3\r\n$3\r\nset\r\n$8\r\nfollower\r\n$6\r\nSkyler\r\n"
-	rd := resp.NewReader(bytes.NewBufferString(raw))
-	for {
-		v, _, err := rd.ReadValue()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("Read %s\n", v.Type())
-		if v.Type() == resp.Array {
-			for _, v := range v.Array() {
-				fmt.Printf("%v\n", v)
-			}
-		}
+	cmd, err := parseCommand(raw)
+
+	if err != nil {
+		t.Fatal(err)
 	}
+
+	fmt.Println(cmd)
 }
