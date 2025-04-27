@@ -136,10 +136,10 @@ func main() {
 	c := client.New("localhost:5001")
 
 	for i := range 10 {
-		if err := c.Set(context.Background(), fmt.Sprintf("foo_%d", i), fmt.Sprintf("bar_%d", i)); err != nil {
+		if err := c.Set(context.TODO(), fmt.Sprintf("foo_%d", i), fmt.Sprintf("bar_%d", i)); err != nil {
 			log.Fatal(err)
 		}
-		val, err := c.Get(context.Background(), fmt.Sprintf("foo_%d", i))
+		val, err := c.Get(context.TODO(), fmt.Sprintf("foo_%d", i))
 		if err != nil {
 			log.Fatal(err)
 		}
