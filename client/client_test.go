@@ -39,6 +39,7 @@ func TestNewClients(t *testing.T) {
 			if err != nil {
 				log.Fatal(err)
 			}
+			defer c.Close()
 			key := fmt.Sprintf("client_%d", it)
 			value := fmt.Sprintf("client_%d", it)
 

@@ -38,6 +38,7 @@ func (c *Client) Set(ctx context.Context, key string, val string) error {
 
 }
 
+
 func (c *Client) Get(ctx context.Context, key string) (string, error) {
 
 	var buf bytes.Buffer
@@ -57,4 +58,8 @@ func (c *Client) Get(ctx context.Context, key string) (string, error) {
 
 	return string(b[:n]), err
 
+}
+
+func (c *Client) Close() error {
+	return c.conn.Close()
 }
