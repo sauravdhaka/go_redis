@@ -41,30 +41,35 @@ func (p *Peer) readLoop() error {
 
 		if v.Type() == resp.Array {
 			for _, value := range v.Array() {
+				var cmd Command
+				fmt.Printf("this is the value we are getting %s", value.String())
 				switch value.String() {
 				case CommandSet:
 					if len(v.Array()) != 3 {
 						return fmt.Errorf("invalid number of arguments in set command")
 					}
-					cmd := SetCommand{
+					cmd = SetCommand{
 						key: v.Array()[1].Bytes(),
 						val: v.Array()[2].Bytes(),
 					}
-					p.msgCh <- Message{
-						cmd:  cmd,
-						peer: p,
-					}
+
 				case CommandGet:
 					if len(v.Array()) != 2 {
 						return fmt.Errorf("invalid number of arguments in GET command")
 					}
-					cmd := GetCommand{
+					cmd = GetCommand{
 						key: v.Array()[1].Bytes(),
 					}
-					p.msgCh <- Message{
-						cmd:  cmd,
-						peer: p,
+				case CommandHello:
+					cmd = HelloCommand{
+						value: v.Array()[1].String(),
 					}
+				default:
+					fmt.Printf("got unknoen command => %+v\n", v.Array())
+				}
+				p.msgCh <- Message{
+					cmd:  cmd,
+					peer: p,
 				}
 			}
 		}

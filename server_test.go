@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -9,7 +10,22 @@ import (
 	"time"
 
 	"github.com/sauravdhaka/go-redis/client"
+	"github.com/tidwall/resp"
 )
+
+func TestFooBar(t *testing.T) {
+	buf := &bytes.Buffer{}
+	rw := resp.NewWriter(buf)
+	rw.WriteString("OK")
+	fmt.Println(buf.String())
+	in := map[string]string{
+		"first":  "1",
+		"second": "2",
+	}
+	out := respWriteMap(in)
+	fmt.Println(out)
+
+}
 
 func TestServerWithMultipleClients(t *testing.T) {
 

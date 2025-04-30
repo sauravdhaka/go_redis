@@ -25,11 +25,11 @@ func New(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Set(ctx context.Context, key string, val string) error {
+func (c *Client) Set(ctx context.Context, key string, val any) error {
 
 	var buf bytes.Buffer
 	wr := resp.NewWriter(&buf)
-	wr.WriteArray([]resp.Value{resp.StringValue("SET"), resp.StringValue(key), resp.StringValue(val)})
+	wr.WriteArray([]resp.Value{resp.StringValue("SET"), resp.StringValue(key), resp.IntegerValue(val.(int))})
 
 	// _, err = io.Copy(conn, buf)
 	_, err := c.conn.Write(buf.Bytes())
@@ -37,7 +37,6 @@ func (c *Client) Set(ctx context.Context, key string, val string) error {
 	return err
 
 }
-
 
 func (c *Client) Get(ctx context.Context, key string) (string, error) {
 

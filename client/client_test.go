@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"testing"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func TestNewClient(t *testing.T) {
@@ -26,4 +28,25 @@ func TestNewClient(t *testing.T) {
 
 		fmt.Println("go back value", val)
 	}
+}
+
+func TestNewClientRedisClient(t *testing.T) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:5001",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	fmt.Println(rdb)
+	fmt.Print("dddddd")
+	err := rdb.Set(context.Background(), "key", "value", 0).Err()
+	if err != nil {
+		panic(err)
+	}
+
+	// val, err := rdb.Get(context.TODO(), "key").Result()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("key", val)
+
 }
