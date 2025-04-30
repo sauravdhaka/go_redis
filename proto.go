@@ -59,8 +59,8 @@ func parseCommand(raw string) (Command, error) {
 				}
 			}
 		}
-		return nil, fmt.Errorf("invalid or unknown command recived: ", raw)
+		return nil, fmt.Errorf("invalid or unknown command recived: %s", raw)
 	}
 
-	return nil, fmt.Errorf("invalid or unknown command recived: ", raw)
+	return nil, fmt.Errorf("invalid or unknown command recived: %s", raw)
 }
