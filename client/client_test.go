@@ -13,6 +13,7 @@ func TestNewClient(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer c.Close()
 
 	for i := range 10 {
 		if err := c.Set(context.TODO(), fmt.Sprintf("foo_%d", i), fmt.Sprintf("bar_%d", i)); err != nil {
