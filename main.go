@@ -65,6 +65,8 @@ func (s *Server) Start() error {
 func (s *Server) handleMessage(msg Message) error {
 
 	switch v := msg.cmd.(type) {
+	case ClientCommand:
+		fmt.Println(v.value)
 	case SetCommand:
 		if err := s.kv.Set(v.key, v.val); err != nil {
 			return err
@@ -84,11 +86,7 @@ func (s *Server) handleMessage(msg Message) error {
 		}
 	case HelloCommand:
 		spec := map[string]string{
-			"server":  "redis",
-			"version": "6.0.0",
-			"proto":   "3",
-			"mode":    "standalone",
-			"role":    "master",
+			"server": "redis",
 		}
 		_, err := msg.peer.Send(respWriteMap(spec))
 		if err != nil {
