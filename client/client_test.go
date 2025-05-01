@@ -17,20 +17,22 @@ func TestNewClient(t *testing.T) {
 	}
 	defer c.Close()
 
-	for i := range 10 {
-		if err := c.Set(context.TODO(), fmt.Sprintf("foo_%d", i), fmt.Sprintf("bar_%d", i)); err != nil {
-			log.Fatal(err)
-		}
-		val, err := c.Get(context.TODO(), fmt.Sprintf("foo_%d", i))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println("go back value", val)
+	if err := c.Set(context.TODO(), "foo", 69); err != nil {
+		log.Fatal(err)
 	}
+	val, err := c.Get(context.TODO(), "foo")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("go back value", val)
+
 }
 
-func TestNewClientRedisClient(t *testing.T) {
+func TestOfficailRedisClient(t *testing.T) {
+	go func ()  {
+		
+	}()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:5001",
 		Password: "", // no password set
@@ -38,15 +40,15 @@ func TestNewClientRedisClient(t *testing.T) {
 	})
 	fmt.Println(rdb)
 	fmt.Print("dddddd")
-	err := rdb.Set(context.Background(), "key", "value", 0).Err()
+	err := rdb.Set(context.Background(), "foo", "bar", 0).Err()
 	if err != nil {
 		panic(err)
 	}
 
-	// val, err := rdb.Get(context.TODO(), "key").Result()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("key", val)
+	val, err := rdb.Get(context.TODO(), "foo").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("get value back", val)
 
 }

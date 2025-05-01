@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/sauravdhaka/go-redis/client"
 	"github.com/tidwall/resp"
 )
@@ -65,5 +66,43 @@ func TestServerWithMultipleClients(t *testing.T) {
 	time.Sleep(time.Second)
 	if len(server.peers) != 0 {
 		t.Fatalf("expected 0 peers but got %d", len(server.peers))
+	}
+}
+
+func TestOfficailRedisClient(t *testing.T) {
+	listenAddr := ":5001"
+	server := NewServer(Config{
+		ListenAddr: listenAddr,
+	})
+	go func() {
+		log.Fatal(server.Start())
+	}()
+	time.Sleep(time.Millisecond * 500)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("localhost%s", ":5001"),
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	testCases := map[string]string{
+		"fu":   "ck",
+		"mot":  "her",
+		"fuc":  "ker",
+		"nice": "work",
+	}
+	for key, val := range testCases {
+
+		if err := rdb.Set(context.Background(), key, val, 0).Err(); err != nil {
+			panic(err)
+		}
+
+		newVal, err := rdb.Get(context.TODO(), key).Result()
+		if err != nil {
+			panic(err)
+		}
+
+		if newVal != val {
+			t.Fatalf("got worng value")
+		}
 	}
 }

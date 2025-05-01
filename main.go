@@ -84,8 +84,7 @@ func (s *Server) handleMessage(msg Message) error {
 		if !ok {
 			return fmt.Errorf("key not found")
 		}
-		_, err := msg.peer.Send(val)
-		if err != nil {
+		if err := resp.NewWriter(msg.peer.conn).WriteString(string(val)); err != nil {
 			return fmt.Errorf("peer send error %s", err)
 		}
 	case HelloCommand:
