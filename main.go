@@ -6,6 +6,8 @@ import (
 	"log"
 	"log/slog"
 	"net"
+
+	"github.com/tidwall/resp"
 )
 
 const defaultListenAdd = ":5001"
@@ -66,13 +68,15 @@ func (s *Server) handleMessage(msg Message) error {
 
 	switch v := msg.cmd.(type) {
 	case ClientCommand:
+		if err := resp.NewWriter(msg.peer.conn).WriteString("OK"); err != nil {
+			return fmt.Errorf("peer send error %s", err)
+		}
 		fmt.Println(v.value)
 	case SetCommand:
 		if err := s.kv.Set(v.key, v.val); err != nil {
 			return err
 		}
-		_, err := msg.peer.Send([]byte("OK\r\n"))
-		if err != nil {
+		if err := resp.NewWriter(msg.peer.conn).WriteString("OK"); err != nil {
 			return fmt.Errorf("peer send error %s", err)
 		}
 	case GetCommand:
